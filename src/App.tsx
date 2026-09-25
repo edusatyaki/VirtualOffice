@@ -32,8 +32,8 @@ function Playback({ state }: { state: OfficeState }) {
 export function App() {
   const state = useSyncExternalStore(sim.subscribe, sim.getState);
   const [selected, setSelected] = useState<string>();
-  const floorRef = useRef<HTMLDivElement>(null);
-  const fs = useFullscreen(floorRef);
+  const appRef = useRef<HTMLDivElement>(null);
+  const fs = useFullscreen(appRef);
 
   useEffect(() => {
     sim.start();
@@ -56,7 +56,7 @@ export function App() {
   const phase = PHASE_LINE.find((p) => p.id === state.phase);
 
   return (
-    <div className="app">
+    <div ref={appRef} className="app">
       <header className="topbar">
         <div className="brand">
           <span className="logo" aria-hidden>
@@ -84,9 +84,11 @@ export function App() {
             <input type="checkbox" checked={state.autoApprove} onChange={(e) => sim.setAutoApprove(e.target.checked)} />
             Auto-approve gates
           </label>
-          <button className="btn" onClick={fs.enter} title="Full screen (F)">
-            ⛶ Full screen
-          </button>
+          {fs.supported && (
+            <button className="btn" onClick={fs.toggle} title={fs.active ? 'Exit full screen (Esc or F)' : 'Full screen (F)'}>
+              {fs.active ? '⛶ Exit full screen' : '⛶ Full screen'}
+            </button>
+          )}
           <button
             className="btn"
             onClick={() => {
@@ -100,48 +102,8 @@ export function App() {
       </header>
 
       <main className="main">
-        <div ref={floorRef} className={`floor-wrap ${fs.active ? 'is-full' : ''} ${fs.fallback ? 'is-full-fallback' : ''}`}>
+        <div className="floor-wrap">
           <Floor state={state} selected={selected} onSelect={setSelected} />
-          {fs.active && (
-            <div className="fs-overlay">
-              <div className="fs-bar">
-                <span className="fs-title">
-                  <strong>{state.project?.name ?? 'Virtual Office'}</strong>
-                  <span className="muted">
-                    Day {state.day} · {clock}
-                  </span>
-                  <span className="pill">{phase ? phase.label : 'Waiting for a client'}</span>
-                </span>
-                <span className="fs-controls">
-                  <Playback state={state} />
-                  <button className="btn primary" onClick={fs.exit} title="Exit full screen (Esc)">
-                    Exit full screen
-                  </button>
-                </span>
-              </div>
-              {state.phase === 'idle' && (
-                <div className="fs-card">
-                  <div className="approval-kicker">No project yet</div>
-                  <p>Exit full screen and brief the Product Manager to start the office.</p>
-                </div>
-              )}
-              {state.approvals.map((ap) => (
-                <div className="fs-card approval" key={ap.id}>
-                  <div className="approval-kicker">Gate {ap.gate} · needs you</div>
-                  <div className="approval-title">{ap.title}</div>
-                  <p>{ap.summary}</p>
-                  <div className="row">
-                    <button className="btn primary" onClick={() => sim.approve(ap.id)}>
-                      Approve
-                    </button>
-                    <button className="btn" onClick={() => sim.requestChanges(ap.id)}>
-                      Request changes
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
         <SidePanel state={state} sim={sim} selected={selected} />
       </main>

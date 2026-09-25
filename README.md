@@ -76,9 +76,8 @@ the Overview shows spend against the budget, and the log warns at 80% and 100%.
 
 ## What's on screen
 
-- **Full screen.** The **⛶ Full screen** button (or the **F** key) puts the office floor on the
-  whole screen, with playback controls on top and approval cards popping up in the corner.
-  **Esc** exits.
+- **Full screen.** The **⛶ Full screen** button (or the **F** key) puts the whole app on the
+  screen: top bar, office floor, side panel and staff strip. **Esc**, **F** or the button exits.
 - **Floor.** Each room shows its headcount and open task count. Tasks fly **from one agent's
   desk to another's**, labelled with the task number and “Sender → Receiver”.
 - **Overview.** Phase, token budget meter, headcount per department, the Architect's team

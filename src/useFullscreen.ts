@@ -1,57 +1,52 @@
 import { useCallback, useEffect, useState, type RefObject } from 'react';
 
 type FsElement = HTMLElement & { webkitRequestFullscreen?: () => Promise<void> | void };
-type FsDocument = Document & { webkitFullscreenElement?: Element | null; webkitExitFullscreen?: () => Promise<void> | void };
+type FsDocument = Document & {
+  webkitFullscreenEnabled?: boolean;
+  webkitFullscreenElement?: Element | null;
+  webkitExitFullscreen?: () => Promise<void> | void;
+};
 
 /**
- * Puts one element into full screen. Uses the Fullscreen API (with Safari's
- * webkit prefix); where that isn't available, such as iPhone Safari, falls back
- * to filling the browser window with CSS (the `fallback` flag).
+ * Puts one element (here, the whole app) into full screen with the Fullscreen API,
+ * including Safari's webkit prefix. `supported` is false where the browser has no
+ * element full screen (e.g. iPhone Safari), so the button can be hidden there.
  */
 export function useFullscreen(ref: RefObject<HTMLElement>) {
-  const [native, setNative] = useState(false);
-  const [fallback, setFallback] = useState(false);
+  const doc = document as FsDocument;
+  const supported = !!(doc.fullscreenEnabled ?? doc.webkitFullscreenEnabled);
+  const [active, setActive] = useState(false);
 
   useEffect(() => {
-    const doc = document as FsDocument;
-    const sync = () => setNative(!!(doc.fullscreenElement ?? doc.webkitFullscreenElement) && (doc.fullscreenElement ?? doc.webkitFullscreenElement) === ref.current);
+    const sync = () => {
+      const el = doc.fullscreenElement ?? doc.webkitFullscreenElement;
+      setActive(!!el && el === ref.current);
+    };
     document.addEventListener('fullscreenchange', sync);
     document.addEventListener('webkitfullscreenchange', sync);
     return () => {
       document.removeEventListener('fullscreenchange', sync);
       document.removeEventListener('webkitfullscreenchange', sync);
     };
-  }, [ref]);
+  }, [doc, ref]);
 
   const enter = useCallback(async () => {
     const el = ref.current as FsElement | null;
     if (!el) return;
     try {
       if (el.requestFullscreen) await el.requestFullscreen();
-      else if (el.webkitRequestFullscreen) await el.webkitRequestFullscreen();
-      else setFallback(true);
+      else await el.webkitRequestFullscreen?.();
     } catch {
-      setFallback(true);
+      // The browser refused (no user gesture, or a sandboxed frame); stay as we are.
     }
   }, [ref]);
 
   const exit = useCallback(async () => {
-    setFallback(false);
-    const doc = document as FsDocument;
     if (doc.fullscreenElement) await doc.exitFullscreen().catch(() => {});
-    else if (doc.webkitFullscreenElement && doc.webkitExitFullscreen) await doc.webkitExitFullscreen();
-  }, []);
+    else if (doc.webkitFullscreenElement) await doc.webkitExitFullscreen?.();
+  }, [doc]);
 
-  const active = native || fallback;
   const toggle = useCallback(() => (active ? exit() : enter()), [active, enter, exit]);
 
-  // Esc already leaves native full screen; make it leave the CSS fallback too.
-  useEffect(() => {
-    if (!fallback) return;
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setFallback(false);
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [fallback]);
-
-  return { active, fallback, enter, exit, toggle };
+  return { supported, active, toggle };
 }
