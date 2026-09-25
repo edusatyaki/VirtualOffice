@@ -1,6 +1,7 @@
 /*
  * Visual system follows Munder Difflin's DESIGN.md: cream panels, ink outlines,
- * SNES three-layer borders, pixel fonts, no radius, no blur, no bold.
+ * SNES three-layer borders, no radius, no blur. Pixel fonts are kept for the
+ * office floor only; the rest of the page uses the system sans-serif.
  * Like Munder Difflin, there is no dark theme: cream is the brand. The floor
  * sits in a dark frame so the office reads as a game world.
  */
@@ -39,9 +40,11 @@
 
   --frame: #1f1a2e;
 
-  --font-display: 'Press Start 2P', monospace;
-  --font-ui: 'Pixelify Sans', ui-sans-serif, system-ui, sans-serif;
-  --font-mono: 'VT323', ui-monospace, monospace;
+  /* pixel fonts: the office floor only */
+  --pixel-display: 'Press Start 2P', monospace;
+  --pixel-mono: 'VT323', ui-monospace, monospace;
+  /* page fonts */
+  --font-ui: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 
   /* panel/default: ink-900 outer, cream-200 middle, ink-700 inner */
   --panel-border: inset 0 0 0 2px var(--ink-900), inset 0 0 0 4px var(--cream-200), inset 0 0 0 5px var(--ink-700);
@@ -50,8 +53,9 @@
 
   color-scheme: light;
   font-family: var(--font-ui);
-  font-size: 16px;
+  font-size: 15px;
   color: var(--ink-900);
+  font-variant-numeric: tabular-nums;
 }
 
 * {
@@ -67,7 +71,7 @@ body {
 
 b,
 strong {
-  font-weight: normal;
+  font-weight: 600;
   color: var(--ink-900);
 }
 
@@ -121,9 +125,9 @@ textarea {
   background: var(--mint);
 }
 .brand-name {
-  font-family: var(--font-display);
-  font-size: 12px;
-  line-height: 20px;
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 22px;
 }
 .clock {
   display: flex;
@@ -131,12 +135,11 @@ textarea {
   gap: 8px;
 }
 .clock-day {
-  font-family: var(--font-display);
-  font-size: 8px;
+  font-size: 14px;
+  font-weight: 600;
 }
 .clock-time {
-  font-family: var(--font-mono);
-  font-size: 20px;
+  font-size: 14px;
   color: var(--ink-700);
 }
 .controls {
@@ -153,6 +156,7 @@ textarea {
 .tabs button {
   font-family: var(--font-ui);
   font-size: 14px;
+  font-weight: 600;
   line-height: 18px;
   padding: 6px 12px;
   cursor: pointer;
@@ -273,22 +277,22 @@ textarea {
 
 /* floor text */
 .sign-name {
-  font-family: var(--font-display);
+  font-family: var(--pixel-display);
   font-size: 8px;
   fill: var(--ink-900);
 }
 .sign-dept {
-  font-family: var(--font-mono);
+  font-family: var(--pixel-mono);
   font-size: 12px;
   fill: var(--ink-500);
 }
 .counter-n {
-  font-family: var(--font-mono);
+  font-family: var(--pixel-mono);
   font-size: 18px;
   fill: var(--ink-900);
 }
 .name-plate {
-  font-family: var(--font-mono);
+  font-family: var(--pixel-mono);
   font-size: 15px;
   fill: var(--ink-900);
   paint-order: stroke;
@@ -297,7 +301,7 @@ textarea {
   stroke-linejoin: miter;
 }
 .tray-id {
-  font-family: var(--font-mono);
+  font-family: var(--pixel-mono);
   font-size: 13px;
   fill: var(--ink-900);
   paint-order: stroke;
@@ -305,7 +309,7 @@ textarea {
   stroke-width: 3px;
 }
 .shipped {
-  font-family: var(--font-display);
+  font-family: var(--pixel-display);
   font-size: 8px;
   fill: var(--ink-900);
 }
@@ -313,7 +317,6 @@ textarea {
 /* agents */
 .agent {
   cursor: pointer;
-  transition: transform 1.6s steps(12);
 }
 .agent image {
   image-rendering: pixelated;
@@ -358,7 +361,7 @@ textarea {
   stroke-width: 2;
 }
 .tag-text {
-  font-family: var(--font-mono);
+  font-family: var(--pixel-mono);
   font-size: 14px;
   fill: var(--ink-900);
 }
@@ -389,7 +392,7 @@ textarea {
   stroke-width: 2;
 }
 .flight-caption {
-  font-family: var(--font-mono);
+  font-family: var(--pixel-mono);
   font-size: 14px;
   fill: var(--ink-900);
 }
@@ -421,16 +424,18 @@ textarea {
   color: var(--ink-700);
 }
 .approval-kicker {
-  font-family: var(--font-display);
-  font-size: 8px;
-  line-height: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 14px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   color: var(--ink-700);
 }
 .approval-title {
-  font-family: var(--font-display);
-  font-size: 10px;
-  line-height: 16px;
-  margin-top: 6px;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 20px;
+  margin-top: 4px;
 }
 .row {
   display: flex;
@@ -515,17 +520,17 @@ textarea {
 }
 h3 {
   margin: 0 0 8px;
-  font-family: var(--font-display);
-  font-size: 8px;
-  line-height: 12px;
-  font-weight: normal;
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   color: var(--ink-700);
 }
 h4 {
   margin: 8px 0 2px;
-  font-family: var(--font-display);
-  font-size: 8px;
-  font-weight: normal;
+  font-size: 13px;
+  font-weight: 700;
 }
 
 .phases {
@@ -578,8 +583,8 @@ h4 {
   transition: width 0.6s steps(6);
 }
 .bar-value {
-  font-family: var(--font-mono);
-  font-size: 18px;
+  font-size: 14px;
+  font-weight: 600;
 }
 .bar-value em {
   font-style: normal;
@@ -601,9 +606,9 @@ h4 {
   box-shadow: var(--panel-inset);
 }
 .stage-n {
-  font-family: var(--font-display);
-  font-size: 12px;
-  line-height: 20px;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 24px;
 }
 .stage-l {
   font-size: 12px;
@@ -635,12 +640,13 @@ h4 {
   align-items: center;
 }
 .task-id {
-  font-family: var(--font-mono);
-  font-size: 16px;
+  font-size: 12px;
+  font-weight: 600;
   color: var(--ink-500);
 }
 .task-title {
-  font-size: 15px;
+  font-size: 14px;
+  font-weight: 600;
   flex: 1;
 }
 .trail {
@@ -654,8 +660,7 @@ h4 {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-family: var(--font-mono);
-  font-size: 15px;
+  font-size: 12px;
   line-height: 16px;
   padding: 0 4px;
   border: 2px solid var(--ink-900);
@@ -672,8 +677,7 @@ h4 {
   grid-template-columns: 8px 28px 1fr;
   gap: 8px;
   align-items: baseline;
-  font-family: var(--font-mono);
-  font-size: 17px;
+  font-size: 13px;
   line-height: 18px;
   padding: 4px 0;
   border-bottom: 2px dashed var(--ink-100);
@@ -707,22 +711,22 @@ h4 {
   padding-left: 18px;
 }
 .report-headline {
-  font-size: 16px;
+  font-size: 15px;
+  font-weight: 700;
   margin: 6px 0;
 }
 
 .budget-table {
   width: 100%;
   border-collapse: collapse;
-  font-family: var(--font-mono);
-  font-size: 16px;
+  font-size: 13px;
   margin: 0 0 12px;
   background: var(--paper-100);
   border: 2px solid var(--ink-900);
 }
 .budget-table th {
   text-align: left;
-  font-weight: normal;
+  font-weight: 600;
   color: var(--ink-500);
   border-bottom: 2px solid var(--ink-900);
   padding: 2px 6px;
@@ -739,6 +743,7 @@ h4 {
   color: var(--ink-500);
 }
 .budget-table .total td {
+  font-weight: 700;
   border-top: 2px solid var(--ink-900);
   background: var(--lemon-light);
 }
@@ -786,8 +791,8 @@ h4 {
   border-bottom: 2px dashed var(--ink-100);
 }
 .handoff-n {
-  font-family: var(--font-mono);
-  font-size: 18px;
+  font-size: 12px;
+  font-weight: 600;
   color: var(--ink-500);
   text-align: right;
 }
@@ -799,7 +804,6 @@ h4 {
 }
 .handoff-who .muted {
   margin-left: auto;
-  font-family: var(--font-mono);
 }
 .arrow {
   color: var(--ink-500);
@@ -837,9 +841,9 @@ h4 {
   min-width: 0;
 }
 .roster-name {
-  font-family: var(--font-display);
-  font-size: 8px;
-  line-height: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 16px;
 }
 .roster-role {
   font-size: 13px;
@@ -849,9 +853,8 @@ h4 {
   text-overflow: ellipsis;
 }
 .roster-task {
-  font-family: var(--font-mono);
-  font-size: 14px;
-  line-height: 14px;
+  font-size: 12px;
+  line-height: 15px;
   color: var(--ink-700);
   white-space: nowrap;
   overflow: hidden;

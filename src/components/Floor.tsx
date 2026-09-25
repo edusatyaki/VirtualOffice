@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { sceneFrames } from '../art/pixelPeople';
 import { FLOOR, ROLES, ROOM_BY_ID, ROOMS } from '../domain/office';
 import type { Agent, Flight, OfficeState, Room, RoomId, Task } from '../domain/types';
@@ -31,6 +31,33 @@ function seat(room: Room, i: number) {
 function center(id: RoomId) {
   const r = ROOM_BY_ID[id];
   return { x: r.x + r.w / 2, y: r.y + r.h / 2 };
+}
+
+/**
+ * Moves a sprite toward its seat in whole-pixel steps. Positions go through the
+ * SVG transform attribute: CSS px transforms inside a scaled SVG get multiplied
+ * by the browser zoom in Chrome, which flings sprites off their desks.
+ */
+function useWalk(x: number, y: number, ms = 1600) {
+  const [pos, setPos] = useState({ x, y });
+  const last = useRef(pos);
+  useEffect(() => {
+    const origin = { ...last.current };
+    if (origin.x === x && origin.y === y) return;
+    const start = performance.now();
+    let raf = 0;
+    const tick = (now: number) => {
+      const t = Math.min(1, (now - start) / ms);
+      const e = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+      const p = { x: Math.round(origin.x + (x - origin.x) * e), y: Math.round(origin.y + (y - origin.y) * e) };
+      last.current = p;
+      setPos(p);
+      if (t < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [x, y, ms]);
+  return pos;
 }
 
 const STATUS_LABEL: Record<Agent['status'], string | undefined> = {
@@ -265,11 +292,12 @@ function AgentSprite({
   onSelect: (id?: string) => void;
 }) {
   const frames = sceneFrames(agent.name);
+  const pos = useWalk(Math.round(x), Math.round(y));
   const label = STATUS_LABEL[agent.status];
   return (
     <g
       className={`agent status-${agent.status}`}
-      style={{ transform: `translate(${Math.round(x)}px, ${Math.round(y)}px)` }}
+      transform={`translate(${pos.x}, ${pos.y})`}
       onClick={(e) => {
         e.stopPropagation();
         onSelect(agent.id);
