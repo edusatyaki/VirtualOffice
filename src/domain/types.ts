@@ -1,5 +1,5 @@
 export type RoomId =
-  | 'lounge'
+  | 'reception'
   | 'product'
   | 'architecture'
   | 'design'
@@ -13,15 +13,15 @@ export type RoomId =
 
 export type Role =
   | 'client'
-  | 'ba'
   | 'pm'
+  | 'hr'
   | 'architect'
   | 'designer'
-  | 'hr'
   | 'scrum'
   | 'lead'
   | 'fe'
   | 'be'
+  | 'fullstack'
   | 'mobile'
   | 'devops'
   | 'qa'
@@ -54,9 +54,10 @@ export interface Agent {
   nextMoveAt: number;
   hiredDay: number;
   tasksDone: number;
+  tokensUsed: number;
 }
 
-export type TaskKind = 'doc' | 'story' | 'approval';
+export type TaskKind = 'doc' | 'story' | 'hire' | 'approval';
 
 /** Where a story is in the delivery line. */
 export type StoryStage = 'build' | 'review' | 'qa' | 'perf' | 'deploy';
@@ -69,13 +70,21 @@ export interface Task {
   role: Role;
   room: RoomId;
   inTransit: boolean;
+  /** Agent this task was handed to. Only they will pick it up. */
+  owner?: string;
+  /** Agent who handed it over most recently. */
+  by?: string;
+  /** Dev who built a story, so bugs go back to the same person. */
+  builder?: string;
+  /** Role that should be hired when a `hire` task completes. */
+  hireRole?: Role;
+  /** Side effect when a doc is finished: the Architect's team plan or the PM's budget. */
+  effect?: 'plan' | 'budget';
   stage?: StoryStage;
-  /** Rework reason when a story is bounced back to engineering. */
   rework?: 'bug' | 'perf';
   needsPerf?: boolean;
   bugs: number;
   perfIssues: number;
-  assignee?: string;
   progress: number;
   work: number;
   done: boolean;
@@ -88,25 +97,67 @@ export interface Flight {
   id: string;
   taskId: string;
   label: string;
+  caption: string;
   kind: TaskKind;
   from: RoomId;
   to: RoomId;
+  fromAgent?: string;
+  toAgent?: string;
   landAt: number;
   startWall: number;
   durationMs: number;
 }
 
+export interface Handoff {
+  id: number;
+  tick: number;
+  day: number;
+  taskId: string;
+  title: string;
+  fromName: string;
+  toName: string;
+  fromRoom: RoomId;
+  toRoom: RoomId;
+}
+
 export type PhaseId =
   | 'idle'
   | 'intake'
-  | 'feasibility'
-  | 'design'
-  | 'staffing'
+  | 'requirements'
+  | 'architecture'
+  | 'hiring'
+  | 'budget'
   | 'planning'
   | 'build'
   | 'release'
   | 'launch'
   | 'shipped';
+
+export interface StoryPlan {
+  title: string;
+  role: Role;
+  needsPerf: boolean;
+}
+
+export interface TeamPlan {
+  team: { role: Role; count: number; why: string }[];
+  stories: StoryPlan[];
+}
+
+export interface BudgetLine {
+  role: Role;
+  headcount: number;
+  tasks: number;
+  tokens: number;
+}
+
+export interface Budget {
+  lines: BudgetLine[];
+  subtotal: number;
+  buffer: number;
+  total: number;
+  usd: number;
+}
 
 export interface Approval {
   id: string;
@@ -135,6 +186,7 @@ export interface StatusReport {
   stories: { total: number; done: number; byStage: Record<StoryStage, number> };
   bugsFound: number;
   perfIssues: number;
+  tokens: { used: number; budget: number };
   headcount: { dept: string; count: number }[];
   pendingApprovals: string[];
   blockers: string[];
@@ -146,9 +198,13 @@ export interface OfficeState {
   day: number;
   phase: PhaseId;
   project?: { name: string; brief: string; startedTick: number };
+  plan?: TeamPlan;
+  budget?: Budget;
+  tokensUsed: number;
   agents: Agent[];
   tasks: Task[];
   flights: Flight[];
+  handoffs: Handoff[];
   approvals: Approval[];
   log: LogEntry[];
   reports: StatusReport[];

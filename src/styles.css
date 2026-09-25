@@ -374,6 +374,15 @@ textarea {
   stroke: var(--gate);
 }
 
+.flight-caption {
+  font-size: 10px !important;
+  font-weight: 700;
+  fill: var(--ink) !important;
+  paint-order: stroke;
+  stroke: var(--floor);
+  stroke-width: 3px;
+}
+
 /* ---------- side panel ---------- */
 .panel {
   border-left: 1px solid var(--line);
@@ -671,6 +680,108 @@ h4 {
   margin: 3px 0 6px;
 }
 
+.budget-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  margin: 0 0 10px;
+  font-variant-numeric: tabular-nums;
+}
+.budget-table th {
+  text-align: left;
+  font-weight: 600;
+  color: var(--muted);
+  border-bottom: 1px solid var(--line);
+  padding: 3px 4px;
+}
+.budget-table td {
+  padding: 3px 4px;
+  border-bottom: 1px solid var(--line);
+}
+.budget-table th:not(:first-child),
+.budget-table td:not(:first-child) {
+  text-align: right;
+}
+.budget-table .sub td {
+  color: var(--muted);
+}
+.budget-table .total td {
+  font-weight: 700;
+  border-bottom: 0;
+}
+
+.meter {
+  height: 10px;
+  border-radius: 5px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+.meter-fill {
+  display: block;
+  height: 100%;
+  background: var(--ok);
+  transition: width 0.6s;
+}
+.meter-fill.warn {
+  background: var(--gate);
+}
+.meter-fill.over {
+  background: var(--warn);
+}
+
+.plan {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.plan li {
+  display: grid;
+  grid-template-columns: 10px 1fr auto;
+  gap: 2px 8px;
+  align-items: center;
+  font-size: 12.5px;
+}
+.plan-why {
+  grid-column: 2 / -1;
+}
+
+.handoffs {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.handoffs li {
+  display: grid;
+  grid-template-columns: 26px 1fr;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line);
+}
+.handoff-n {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+.handoff-who {
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+  font-size: 13px;
+}
+.handoff-who .muted {
+  margin-left: auto;
+}
+.arrow {
+  color: var(--muted);
+}
+
 /* ---------- roster ---------- */
 .roster {
   display: flex;
@@ -739,4 +850,17 @@ h4 {
     border-top: 1px solid var(--line);
     max-height: 70vh;
   }
+}
+
+/* hiring requisitions */
+.card-hire {
+  fill: #ffedd5;
+  stroke: #ea580c;
+}
+.flight-path.flight-hire {
+  stroke: #ea580c;
+}
+.flight-token.flight-hire rect {
+  fill: #ffedd5;
+  stroke: #ea580c;
 }

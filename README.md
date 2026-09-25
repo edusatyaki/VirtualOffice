@@ -1,14 +1,10 @@
 # Virtual Office
 
-A product company where every employee is an AI agent. A client briefs an idea, and the
-agents take it through intake, feasibility, design, staffing, sprint planning, build, QA,
-performance testing and deployment. The client approves at each gate and gets a daily
-report from the Scrum Master.
+A product company where every employee is an AI agent. You bring an idea, and the office
+staffs itself, plans a token budget, waits for your approval, then builds, tests and ships it.
+Every hand-off between agents is visible on a live office floor.
 
-The office floor shows it all live: how many agents sit in each department, who is working,
-and every task as it moves from room to room.
-
-> **Status: v0.1, simulation.** The agents are simulated. The engine emits the same state the
+> **Status: v0.2, simulation.** The agents are simulated. The engine emits the same state the
 > real agent backend will emit, so the floor, panels and reports stay the same when real
 > Claude agents are plugged in.
 
@@ -19,81 +15,98 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:5190, click **Brief the team**, and approve each gate as it comes up
-(or tick **Auto-approve gates** and switch to 4× to watch a full project ship).
+Open http://localhost:5190 and click **Brief the Product Manager**. Use **Pause** and
+**Step ›** to follow the office one step at a time, or tick **Auto-approve gates** and pick 4×
+to watch a whole project ship.
+
+## How a project flows
+
+```
+You ──brief──▶ Product Manager ──requisition──▶ HR ──hires──▶ Solution Architect
+                                                                   │
+                     workflow, architecture, team plan (who and how many)
+                                                                   ▼
+            HR ◀──one requisition per seat── Architect      HR hires every seat;
+                                                            new hires walk in from Reception
+                                                                   │
+   Product Manager ◀──estimate inputs── Architect: token budget per role (+20% rework buffer)
+                                                                   │
+                          ✋ Gate 1: you approve the team and the token budget
+                                                                   │
+   Design & sprint plan ─▶ Scrum Master assigns stories to named developers ─▶ build
+   dev ─▶ Tech Lead (review) ─▶ QA ─▶ Performance QA ─▶ DevOps (deploy)
+   (bugs and slow endpoints go back to the same developer)
+                                                                   │
+                          ✋ Gate 2: sprint demo / UAT      ✋ Gate 3: go live
+```
+
+The office starts with three people: **you**, **Rohan (Product Manager)** and **Neha (HR)**.
+Everyone else is hired for the project, based on the Architect's team plan. The plan
+changes with the brief: “mobile” adds a Mobile Dev, and “MVP” or “simple” means full-stack
+devs and a smaller scope.
 
 ## The office
 
-| Room | Department | Agents |
+| Room | Department | Who sits there |
 |---|---|---|
-| Client Lounge | Client Services | Business Analyst |
+| Reception | Onboarding | New hires arrive here, then walk to their desks |
 | Product Office | Product | Product Manager |
 | Architecture Room | Architecture | Solution Architect |
 | Design Studio | Design | UI/UX Designer |
-| HR & Staffing | People | HR / Staffing (hires the dev team per project) |
-| Engineering Floor | Engineering | Tech Lead, Frontend, Backend, Mobile devs |
+| HR & Staffing | People | HR |
+| Engineering Floor | Engineering | Tech Lead, Frontend, Backend, Full-stack, Mobile devs |
 | Scrum War Room | Delivery | Scrum Master |
-| Boardroom | Leadership | You, the client: every approval gate lands here |
-| QA Lab | Quality | QA Tester (functional bugs) |
-| Performance Lab | Performance | Performance QA (load, spike and soak tests; 1 lakh / 10 lakh users; one year of data growth) |
-| Server Room | DevOps | DevOps Engineer (CI/CD, deploys) |
+| Boardroom | Client | You. Every approval lands here |
+| QA Lab | Quality | QA Testers |
+| Performance Lab | Performance | Performance QA: load, spike and soak tests for 1 lakh / 10 lakh users |
+| Server Room | DevOps | DevOps Engineer |
 
-## The pipeline
+## Token budget
 
-```
-Intake ─✋1─ Feasibility ─✋2─ Design ─✋3─ Staffing ─ Planning ─✋4─ Build ─✋5─ Release ─✋6─ Launch ─ Shipped
-```
-
-| Gate | You approve |
-|---|---|
-| 1 | Requirements brief (BA) |
-| 2 | Go / No-Go: PRD + effort and cost estimate |
-| 3 | Architecture, wireframes, scalability targets |
-| 4 | Sprint backlog with acceptance criteria |
-| 5 | Sprint demo / UAT |
-| 6 | Go live, after the full load test |
-
-During build, every story moves through
-`Engineering (build) → Engineering (code review) → QA Lab → Performance Lab (if it's on a hot path) → Server Room`.
-A QA bug or a failed load test sends it back to Engineering, and that loop is visible on the
-floor and in each task's room trail.
+Every agent burns tokens while it works (`TOKENS_PER_TICK` in `src/domain/office.ts`).
+Once the team is hired, the PM estimates the budget: tokens already spent, plus the expected
+cost of every remaining document and every story stage, per role, plus a 20% buffer for
+rework. It's priced at a blended `USD_PER_M_TOKENS` rate you can change. After you approve,
+the Overview shows spend against the budget, and the log warns at 80% and 100%.
 
 ## What's on screen
 
-- **Floor.** Each room shows its headcount and open task count. Avatars pulse while working
-  and walk between rooms. Tasks fly between rooms as cards: yellow for documents, blue for
-  stories, amber for approvals.
-- **Overview.** Current phase, headcount per department, and the delivery pipeline.
-- **Tasks.** Every task with its current room, assignee, and the full trail of rooms it passed through.
+- **Floor.** Each room shows its headcount and open task count. Tasks fly **from one agent's
+  desk to another's**, labelled with the task number and “Sender → Receiver”.
+- **Overview.** Phase, token budget meter, headcount per department, the Architect's team
+  plan with hired / needed, and the delivery pipeline.
+- **Handoffs.** Numbered, in order: who passed which task to whom, and between which rooms.
+- **Tasks.** Every task with its owner, who handed it over, and its trail of rooms.
 - **Activity.** A live feed of everything that happened.
-- **Reports.** The Scrum Master's daily report, plus one on demand. Reports are built only
-  from ledger facts (stories by stage, bugs, performance issues, blockers, pending approvals),
-  never from an LLM guess.
+- **Reports.** The daily report, and one on demand: progress, tokens against budget,
+  quality, blockers. Reports use only facts from the task records.
 
 ## Code map
 
 ```
 src/domain/types.ts     Agent, Task, Flight, Approval, StatusReport, OfficeState
-src/domain/office.ts    Rooms, roles, core staff, hire pool, story stages, phases + gates
+src/domain/office.ts    Rooms, roles, founders, talent pool, team-plan logic, token rates, phases + gates
 src/sim/engine.ts       Simulation engine: phase state machine, assignment, work, rework, reports
 src/components/Floor.tsx      SVG office floor: rooms, avatars, flying tasks
-src/components/SidePanel.tsx  Brief form, approvals, overview, tasks, activity, reports
+src/components/SidePanel.tsx  Brief form, budget approval, overview, handoffs, tasks, activity, reports
 src/components/Roster.tsx     Staff strip
 ```
 
 ## Roadmap
 
-1. **v0.1 (this).** Office floor, full SDLC pipeline, gates, daily reports, all simulated.
-2. **Backend.** Move the engine to a Node service with Postgres (projects, phases, tasks,
+1. **v0.1.** Office floor, full SDLC pipeline, gates, daily reports, all simulated.
+2. **v0.2 (this).** Hiring-first flow (PM → Architect → HR), token budget and approval,
+   agent-to-agent hand-offs, step-by-step mode.
+3. **Backend.** Move the engine to a Node service with Postgres (projects, phases, tasks,
    approvals, events) and stream state to the UI over WebSocket.
-3. **Real documents.** BA, PM, Architect, Designer and Scrum agents run on the Claude Agent
-   SDK and write real artifacts (brief, PRD, architecture, OpenAPI spec, backlog). The BA
-   holds a real Q&A with the client.
-4. **Real code.** Dev agents work in sandboxed containers on a GitHub repo, one branch and
+4. **Real documents.** PM, Architect, HR, Designer and Scrum agents run on the Claude Agent
+   SDK and write real artifacts (PRD, architecture, team plan, OpenAPI spec, backlog). The PM
+   holds a real Q&A with the client, and budgets come from real token counts.
+5. **Real code.** Dev agents work in sandboxed containers on a GitHub repo, one branch and
    PR per story. The Tech Lead reviews and CI runs the tests.
-5. **Real testing and deploy.** QA runs tests against acceptance criteria, Performance QA
+6. **Real testing and deploy.** QA runs tests against acceptance criteria, Performance QA
    runs k6 load tests, and DevOps deploys a preview URL, then production.
-6. **Multi-client.** Client logins, several projects at once, budgets and a cost dashboard,
+7. **Multi-client.** Client logins, several projects at once, budgets and a cost dashboard,
    and daily reports by email or Slack.
 
 Inspired by [Munder Difflin](https://github.com/chaitanyagiri/munder-difflin): mailbox

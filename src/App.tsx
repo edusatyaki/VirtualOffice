@@ -43,8 +43,11 @@ export function App() {
           <button className="btn" onClick={() => sim.setPaused(!state.paused)}>
             {state.paused ? '▶ Resume' : '❚❚ Pause'}
           </button>
+          <button className="btn" disabled={!state.paused} onClick={() => sim.stepOnce()} title="Pause first, then advance one step at a time">
+            Step ›
+          </button>
           <div className="seg">
-            {[1, 2, 4].map((s) => (
+            {[0.5, 1, 2, 4].map((s) => (
               <button key={s} className={state.speed === s ? 'active' : ''} onClick={() => sim.setSpeed(s)}>
                 {s}×
               </button>

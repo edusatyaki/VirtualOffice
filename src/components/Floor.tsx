@@ -47,6 +47,12 @@ export function Floor({
     byRoom.set(a.at, list);
   }
 
+  const positions = new Map<string, { x: number; y: number }>();
+  for (const a of state.agents) {
+    const list = byRoom.get(a.at) ?? [];
+    positions.set(a.id, slot(ROOM_BY_ID[a.at], list.indexOf(a)));
+  }
+
   const openTasks = state.tasks.filter((t) => !t.done && !t.inTransit && t.kind !== 'approval');
   const shipped = state.tasks.filter((t) => t.kind === 'story' && t.done).length;
 
@@ -76,11 +82,8 @@ export function Floor({
         );
       })}
 
-      <FlightLayer flights={state.flights} />
-
       {state.agents.map((a) => {
-        const list = byRoom.get(a.at) ?? [];
-        const pos = slot(ROOM_BY_ID[a.at], list.indexOf(a));
+        const pos = positions.get(a.id)!;
         const task = a.taskId ? state.tasks.find((t) => t.id === a.taskId) : undefined;
         return (
           <AgentView
@@ -94,6 +97,8 @@ export function Floor({
           />
         );
       })}
+
+      <FlightLayer flights={state.flights} positions={positions} />
     </svg>
   );
 }
@@ -236,7 +241,7 @@ function AgentView({
   );
 }
 
-function FlightLayer({ flights }: { flights: Flight[] }) {
+function FlightLayer({ flights, positions }: { flights: Flight[]; positions: Map<string, { x: number; y: number }> }) {
   const [now, setNow] = useState(() => performance.now());
   useEffect(() => {
     if (!flights.length) return;
@@ -252,10 +257,12 @@ function FlightLayer({ flights }: { flights: Flight[] }) {
   return (
     <g className="flights">
       {flights.map((f) => {
-        const a = center(f.from);
-        const b = center(f.to);
-        const c = { x: (a.x + b.x) / 2, y: Math.min(a.y, b.y) - 60 };
-        const t = Math.min(1, Math.max(0, (now - f.startWall) / f.durationMs));
+        if (now < f.startWall) return null; // staggered hand-offs wait their turn
+        const a = (f.fromAgent && positions.get(f.fromAgent)) || center(f.from);
+        const b = (f.toAgent && positions.get(f.toAgent)) || center(f.to);
+        const lift = Math.max(40, Math.hypot(b.x - a.x, b.y - a.y) * 0.25);
+        const c = { x: (a.x + b.x) / 2, y: Math.min(a.y, b.y) - lift };
+        const t = Math.min(1, (now - f.startWall) / f.durationMs);
         const e = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
         const px = (1 - e) * (1 - e) * a.x + 2 * (1 - e) * e * c.x + e * e * b.x;
         const py = (1 - e) * (1 - e) * a.y + 2 * (1 - e) * e * c.y + e * e * b.y;
@@ -266,6 +273,9 @@ function FlightLayer({ flights }: { flights: Flight[] }) {
               <rect x="-26" y="-11" width="52" height="22" rx="6" />
               <text y="4" textAnchor="middle">
                 {f.label.replace('T-', '#')}
+              </text>
+              <text y="25" textAnchor="middle" className="flight-caption">
+                {f.caption}
               </text>
             </g>
           </g>
