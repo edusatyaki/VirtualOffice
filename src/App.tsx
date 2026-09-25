@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { Floor } from './components/Floor';
+import { OrgChart } from './components/OrgChart';
 import { Roster } from './components/Roster';
 import { SidePanel } from './components/SidePanel';
 import { PHASE_LINE } from './domain/office';
@@ -32,6 +33,7 @@ function Playback({ state }: { state: OfficeState }) {
 export function App() {
   const state = useSyncExternalStore(sim.subscribe, sim.getState);
   const [selected, setSelected] = useState<string>();
+  const [view, setView] = useState<'floor' | 'org'>('floor');
   const appRef = useRef<HTMLDivElement>(null);
   const fs = useFullscreen(appRef);
 
@@ -79,6 +81,14 @@ export function App() {
           </span>
         </div>
         <div className="controls">
+          <div className="seg" role="tablist" aria-label="View">
+            <button role="tab" aria-selected={view === 'floor'} className={view === 'floor' ? 'active' : ''} onClick={() => setView('floor')}>
+              Office floor
+            </button>
+            <button role="tab" aria-selected={view === 'org'} className={view === 'org' ? 'active' : ''} onClick={() => setView('org')}>
+              Org chart
+            </button>
+          </div>
           <Playback state={state} />
           <label className="toggle">
             <input type="checkbox" checked={state.autoApprove} onChange={(e) => sim.setAutoApprove(e.target.checked)} />
@@ -103,7 +113,11 @@ export function App() {
 
       <main className="main">
         <div className="floor-wrap">
-          <Floor state={state} selected={selected} onSelect={setSelected} />
+          {view === 'floor' ? (
+            <Floor state={state} selected={selected} onSelect={setSelected} />
+          ) : (
+            <OrgChart state={state} selected={selected} onSelect={setSelected} />
+          )}
         </div>
         <SidePanel state={state} sim={sim} selected={selected} />
       </main>

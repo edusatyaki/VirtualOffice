@@ -262,6 +262,7 @@ textarea {
 .floor-wrap {
   padding: 16px;
   min-height: 0;
+  min-width: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -908,7 +909,7 @@ h4 {
     height: auto;
   }
   .main {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
   .floor {
     max-height: none;
@@ -928,4 +929,232 @@ h4 {
 .app:-webkit-full-screen {
   background: var(--cream-100);
   overflow: auto;
+}
+
+/* ---------- org chart ---------- */
+.org-wrap {
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  max-height: calc(100vh - 180px);
+  display: flex;
+  flex-direction: column;
+  background: var(--cream-100);
+  box-shadow: var(--panel-border);
+  padding: 16px;
+  min-height: 0;
+}
+.org-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 0 4px 12px;
+  border-bottom: 2px dashed var(--ink-100);
+}
+.org-head h2 {
+  margin: 0 0 2px;
+  font-size: 18px;
+}
+.org-legend {
+  display: flex;
+  gap: 12px;
+  color: var(--ink-700);
+}
+.org-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.legend-card,
+.legend-open {
+  width: 14px;
+  height: 10px;
+  border: 2px solid var(--ink-900);
+  background: var(--cream-50);
+}
+.legend-open {
+  border-style: dashed;
+  border-color: var(--ink-500);
+}
+.org-hint {
+  margin: 12px 4px 0;
+  padding: 8px 12px;
+  background: var(--lemon-light);
+  border: 2px solid var(--ink-900);
+}
+.org-scroll {
+  flex: 1;
+  overflow: auto;
+  padding: 16px 4px 8px;
+  min-height: 0;
+}
+
+/* Tree connectors (the classic CSS org-chart pattern): each <li> draws half of
+   the bar above it plus a stub down to its card; nested <ul>s draw the line
+   down from the parent. */
+.org,
+.org ul {
+  display: flex;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.org {
+  width: max-content;
+  transform-origin: top left;
+}
+.org-sizer {
+  margin: 0 auto;
+}
+.org-tools {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.org-tools .seg button {
+  padding: 3px 10px;
+  font-size: 13px;
+}
+.org ul {
+  position: relative;
+  padding-top: 20px;
+}
+.org ul::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  height: 20px;
+  border-left: 2px solid var(--ink-900);
+}
+.org li {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 6px 0;
+}
+.org li::before,
+.org li::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 50%;
+  width: 50%;
+  height: 20px;
+  border-top: 2px solid var(--ink-900);
+}
+.org li::after {
+  right: auto;
+  left: 50%;
+  border-left: 2px solid var(--ink-900);
+}
+.org li:only-child::before,
+.org li:only-child::after {
+  display: none;
+}
+.org li:only-child {
+  padding-top: 0;
+}
+.org li:first-child::before,
+.org li:last-child::after {
+  border: 0 none;
+}
+.org li:last-child::before {
+  border-right: 2px solid var(--ink-900);
+}
+
+/* individual contributors stacked under their manager, joined by a centre spine */
+.org-stack {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 20px;
+}
+.org-stack::before {
+  content: '';
+  position: absolute;
+  top: -20px;
+  bottom: 20px;
+  left: 50%;
+  border-left: 2px solid var(--ink-900);
+}
+.org-stack > .org-card {
+  position: relative;
+  z-index: 1;
+}
+
+.org-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 176px;
+  padding: 8px;
+  text-align: left;
+  cursor: pointer;
+  border: 0;
+  background: var(--cream-50);
+  box-shadow: var(--panel-border), var(--hard-shadow);
+  font: inherit;
+  color: inherit;
+}
+.org-card:hover {
+  background: #fff;
+}
+.org-card.selected {
+  box-shadow: inset 0 0 0 2px var(--ink-900), inset 0 0 0 5px var(--accent), inset 0 0 0 6px var(--ink-700), var(--hard-shadow);
+}
+.org-card.open {
+  cursor: default;
+  background: var(--cream-100);
+  box-shadow: none;
+  border: 2px dashed var(--ink-500);
+}
+.org-avatar {
+  display: grid;
+  place-items: end center;
+  width: 40px;
+  height: 50px;
+  flex: none;
+  border: 2px solid var(--ink-900);
+  overflow: hidden;
+}
+.org-avatar img {
+  image-rendering: pixelated;
+  display: block;
+}
+.open-avatar {
+  place-items: center;
+  border-style: dashed;
+  border-color: var(--ink-500);
+  color: var(--ink-500);
+  font-size: 18px;
+  font-weight: 700;
+}
+.org-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.org-name {
+  font-size: 13px;
+  font-weight: 700;
+}
+.org-role {
+  font-size: 12px;
+  color: var(--ink-500);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.org-reports {
+  font-size: 11px;
+  color: var(--ink-700);
 }

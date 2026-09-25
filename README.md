@@ -78,6 +78,11 @@ the Overview shows spend against the budget, and the log warns at 80% and 100%.
 
 - **Full screen.** The **⛶ Full screen** button (or the **F** key) puts the whole app on the
   screen: top bar, office floor, side panel and staff strip. **Esc**, **F** or the button exits.
+- **Org chart.** Switch **Office floor / Org chart** in the top bar to see the live
+  manager → employee tree: You → Product Manager and HR; PM → Architect, Designer, Scrum
+  Master; Architect → Tech Lead, DevOps, QA, Performance QA; Tech Lead → developers.
+  Planned-but-unfilled seats show as dashed open seats and fill in as HR hires. **Fit** scales
+  the tree to the panel; **100%** shows it full size.
 - **Floor.** Each room shows its headcount and open task count. Tasks fly **from one agent's
   desk to another's**, labelled with the task number and “Sender → Receiver”.
 - **Overview.** Phase, token budget meter, headcount per department, the Architect's team
@@ -105,6 +110,7 @@ src/domain/office.ts    Rooms, roles, founders, talent pool, team-plan logic, to
 src/sim/engine.ts       Simulation engine: phase state machine, assignment, work, rework, reports
 src/art/pixelPeople.ts        Pixel portraits + walking sprites (ported from Munder Difflin)
 src/components/Floor.tsx      SVG office floor: rooms, desks, pixel staff, flying envelopes
+src/components/OrgChart.tsx   Live manager → employee tree with open seats
 src/components/SidePanel.tsx  Brief form, budget approval, overview, handoffs, tasks, activity, reports
 src/components/Roster.tsx     Staff strip
 ```
