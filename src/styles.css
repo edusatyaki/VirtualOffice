@@ -919,3 +919,68 @@ h4 {
     max-height: 75vh;
   }
 }
+
+/* ---------- full screen ---------- */
+.floor-wrap {
+  position: relative;
+}
+.floor-wrap.is-full {
+  padding: 64px 16px 16px;
+  width: 100vw;
+  height: 100vh;
+}
+.floor-wrap.is-full .floor {
+  max-height: calc(100vh - 80px);
+}
+/* CSS fallback where the Fullscreen API isn't available (e.g. iPhone Safari) */
+.floor-wrap.is-full-fallback {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+}
+.fs-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.fs-bar {
+  pointer-events: auto;
+  position: absolute;
+  top: 8px;
+  left: 16px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 8px 12px;
+  background: var(--cream-100);
+  box-shadow: var(--panel-border), var(--hard-shadow);
+}
+.fs-title,
+.fs-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.fs-card {
+  pointer-events: auto;
+  position: absolute;
+  right: 28px;
+  bottom: 28px;
+  width: min(360px, calc(100% - 56px));
+  padding: 16px;
+  background: var(--cream-50);
+  box-shadow: var(--panel-border), var(--hard-shadow);
+}
+.fs-card.approval {
+  box-shadow: inset 0 0 0 2px var(--ink-900), inset 0 0 0 4px var(--lemon), inset 0 0 0 5px var(--ink-700), var(--hard-shadow);
+}
+.fs-card p {
+  margin: 4px 0 12px;
+  font-size: 14px;
+  line-height: 18px;
+  color: var(--ink-700);
+}
