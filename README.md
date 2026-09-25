@@ -8,6 +8,8 @@ Every hand-off between agents is visible on a live office floor.
 > real agent backend will emit, so the floor, panels and reports stay the same when real
 > Claude agents are plugged in.
 
+**Live demo:** https://edusatyaki.github.io/VirtualOffice/
+
 ## Run it
 
 ```bash
@@ -18,6 +20,9 @@ npm run dev
 Open http://localhost:5190 and click **Brief the Product Manager**. Use **Pause** and
 **Step ›** to follow the office one step at a time, or tick **Auto-approve gates** and pick 4×
 to watch a whole project ship.
+
+Every push to `main` rebuilds and redeploys the live demo through
+`.github/workflows/deploy.yml`.
 
 ## How a project flows
 
