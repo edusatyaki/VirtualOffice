@@ -25,9 +25,14 @@ export function App() {
     <div className="app">
       <header className="topbar">
         <div className="brand">
-          <span className="logo">▦</span>
+          <span className="logo" aria-hidden>
+            <i />
+            <i />
+            <i />
+            <i />
+          </span>
           <div>
-            <div className="brand-name">Agent Office</div>
+            <div className="brand-name">Virtual Office</div>
             <div className="muted small">{state.project ? state.project.name : 'No active project'}</div>
           </div>
         </div>

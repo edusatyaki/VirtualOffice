@@ -86,13 +86,23 @@ the Overview shows spend against the budget, and the log warns at 80% and 100%.
 - **Reports.** The daily report, and one on demand: progress, tokens against budget,
   quality, blockers. Reports use only facts from the task records.
 
+## Look and feel
+
+The visual style follows [Munder Difflin](https://github.com/chaitanyagiri/munder-difflin)'s
+design system: cream panels with three-layer pixel borders, ink outlines, Press Start 2P /
+Pixelify Sans / VT323, wood-floored rooms, and hand-drawn pixel people who sit at desks and
+walk between rooms. The character drawing code is ported from Munder Difflin (MIT) with a
+new outfit and hairstyle for each of our staff. See `THIRD_PARTY_NOTICES.md`. Munder
+Difflin's LimeZu tileset is licensed separately and is not used.
+
 ## Code map
 
 ```
 src/domain/types.ts     Agent, Task, Flight, Approval, StatusReport, OfficeState
 src/domain/office.ts    Rooms, roles, founders, talent pool, team-plan logic, token rates, phases + gates
 src/sim/engine.ts       Simulation engine: phase state machine, assignment, work, rework, reports
-src/components/Floor.tsx      SVG office floor: rooms, avatars, flying tasks
+src/art/pixelPeople.ts        Pixel portraits + walking sprites (ported from Munder Difflin)
+src/components/Floor.tsx      SVG office floor: rooms, desks, pixel staff, flying envelopes
 src/components/SidePanel.tsx  Brief form, budget approval, overview, handoffs, tasks, activity, reports
 src/components/Roster.tsx     Staff strip
 ```

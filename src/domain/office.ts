@@ -1,19 +1,20 @@
 import type { PhaseId, Role, Room, RoomId, StoryPlan, StoryStage, TeamPlan } from './types';
 
-export const FLOOR = { w: 1200, h: 780 };
+export const FLOOR = { w: 1200, h: 852 };
 
+// Accent colours follow Munder Difflin's DESIGN.md palette.
 export const ROOMS: Room[] = [
-  { id: 'reception', name: 'Reception', dept: 'Onboarding', color: '#e07a5f', x: 20, y: 20, w: 250, h: 200 },
-  { id: 'product', name: 'Product Office', dept: 'Product', color: '#8b5cf6', x: 280, y: 20, w: 220, h: 200 },
-  { id: 'architecture', name: 'Architecture Room', dept: 'Architecture', color: '#4f46e5', x: 510, y: 20, w: 220, h: 200 },
-  { id: 'design', name: 'Design Studio', dept: 'Design', color: '#db2777', x: 740, y: 20, w: 210, h: 200 },
-  { id: 'hr', name: 'HR & Staffing', dept: 'People', color: '#d97706', x: 960, y: 20, w: 220, h: 200 },
-  { id: 'engineering', name: 'Engineering Floor', dept: 'Engineering', color: '#2563eb', x: 20, y: 250, w: 560, h: 260 },
-  { id: 'war', name: 'Scrum War Room', dept: 'Delivery', color: '#0d9488', x: 590, y: 250, w: 290, h: 260 },
-  { id: 'board', name: 'Boardroom', dept: 'Client', color: '#64748b', x: 890, y: 250, w: 290, h: 260 },
-  { id: 'qa', name: 'QA Lab', dept: 'Quality', color: '#16a34a', x: 20, y: 540, w: 380, h: 220 },
-  { id: 'perf', name: 'Performance Lab', dept: 'Performance', color: '#ea580c', x: 410, y: 540, w: 380, h: 220 },
-  { id: 'server', name: 'Server Room', dept: 'DevOps', color: '#0891b2', x: 800, y: 540, w: 380, h: 220 },
+  { id: 'reception', name: 'Reception', dept: 'Onboarding', color: '#FFA07A', x: 16, y: 16, w: 252, h: 236 },
+  { id: 'product', name: 'Product Office', dept: 'Product', color: '#B197FC', x: 280, y: 16, w: 220, h: 236 },
+  { id: 'architecture', name: 'Architecture', dept: 'Architecture', color: '#6C8EF5', x: 512, y: 16, w: 220, h: 236 },
+  { id: 'design', name: 'Design Studio', dept: 'Design', color: '#FF6B6B', x: 744, y: 16, w: 208, h: 236 },
+  { id: 'hr', name: 'HR & Staffing', dept: 'People', color: '#FFD93D', x: 964, y: 16, w: 220, h: 236 },
+  { id: 'engineering', name: 'Engineering Floor', dept: 'Engineering', color: '#4ECDC4', x: 16, y: 268, w: 564, h: 300 },
+  { id: 'war', name: 'Scrum War Room', dept: 'Delivery', color: '#9B7EDE', x: 592, y: 268, w: 288, h: 300 },
+  { id: 'board', name: 'Boardroom', dept: 'Client', color: '#E8A33D', x: 892, y: 268, w: 292, h: 300 },
+  { id: 'qa', name: 'QA Lab', dept: 'Quality', color: '#6BCF7F', x: 16, y: 584, w: 380, h: 252 },
+  { id: 'perf', name: 'Performance Lab', dept: 'Performance', color: '#FF9F43', x: 408, y: 584, w: 380, h: 252 },
+  { id: 'server', name: 'Server Room', dept: 'DevOps', color: '#6B5878', x: 800, y: 584, w: 384, h: 252 },
 ];
 
 export const ROOM_BY_ID = Object.fromEntries(ROOMS.map((r) => [r.id, r])) as Record<RoomId, Room>;

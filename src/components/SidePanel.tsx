@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { DEPT_ROOMS, PHASE_LINE, ROLES, ROOM_BY_ID, STORY_STAGES } from '../domain/office';
 import type { Approval, OfficeState, StatusReport, StoryStage, Task } from '../domain/types';
+import { portraitURL } from '../art/pixelPeople';
 import { fmtTokens, type OfficeSim } from '../sim/engine';
 
 type Tab = 'overview' | 'handoffs' | 'tasks' | 'activity' | 'reports';
@@ -27,9 +28,13 @@ export function SidePanel({ state, sim, selected }: { state: OfficeState; sim: O
       {agent && (
         <div className="agent-card">
           <div className="agent-card-head">
-            <span className="swatch" style={{ background: ROOM_BY_ID[agent.home].color }} />
-            <strong>{agent.name}</strong>
-            <span className="muted">{ROLES[agent.role].label}</span>
+            <span className="portrait" style={{ background: ROOM_BY_ID[agent.home].color }}>
+              <img src={portraitURL(agent.name)} alt="" width={36} height={56} />
+            </span>
+            <div>
+              <div className="roster-name">{agent.name}</div>
+              <div className="muted">{ROLES[agent.role].label}</div>
+            </div>
           </div>
           <div className="muted small">
             {agent.status} · in {ROOM_BY_ID[agent.at].name} · {agent.tasksDone} tasks done · {fmtTokens(agent.tokensUsed)} tokens ·
@@ -291,7 +296,8 @@ function Handoffs({ state }: { state: OfficeState }) {
 function RoomChip({ id }: { id: Task['room'] }) {
   const r = ROOM_BY_ID[id];
   return (
-    <span className="trail-chip" style={{ borderColor: r.color, color: r.color }}>
+    <span className="trail-chip">
+      <i style={{ background: r.color }} />
       {r.name}
     </span>
   );
